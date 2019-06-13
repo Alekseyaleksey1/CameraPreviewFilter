@@ -1,80 +1,90 @@
-package com.example.aleksei.camerapreviewfilter;
+package com.example.aleksei.camerapreviewfilter.view;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.params.RggbChannelVector;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.view.Surface;
+import android.view.Display;
 import android.view.TextureView;
+import android.view.View;
 import android.widget.SeekBar;
-import java.util.ArrayList;
+import android.widget.TableLayout;
 
-public class CameraActivity extends Activity {
-    TextureView textureView;
-    SeekBar sbRed;
-    SeekBar sbGreen;
-    SeekBar sbBlue;
-    ListenSeekBarChange seekBarChangedListener;
-    CameraManager cameraManager;
-    int reqCameraFacingType;
-    TextureListener surfaceTextureListener;
-    CameraCallback cameraCallback;
-    CameraSessionCallback cameraSessionCallback;
-    String workingCameraID;
-    public CameraDevice cameraDevice;
-    CaptureRequest.Builder captureBuilder;
-    CameraCaptureSession cameraSession;
+import com.example.aleksei.camerapreviewfilter.R;
+import com.example.aleksei.camerapreviewfilter.presenter.ChiefPresenter;
+
+public class CameraActivity extends Activity implements CameraInterface {
+
+    public static final int PERMISSIONS_REQUEST_CODE = 1;
+    private ChiefPresenter chiefPresenter;
+    private TextureView textureViewPreviewHolder;
+    private SeekBar sbRed;
+    private SeekBar sbGreen;
+    private SeekBar sbBlue;
+    private TableLayout tlBarsViewGroup;
+
+    //CameraManager cameraManager;
+    //int reqCameraFacingType;
+    //CameraCallback cameraCallback;
+    //CameraSessionCallback cameraSessionCallback;
+    //String workingCameraID;
+    //public CameraDevice cameraDevice;
+    //CaptureRequest.Builder captureBuilder;
+    //CameraCaptureSession cameraSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        textureView = findViewById(R.id.activity_camera_textureview);
+        initializeUI();
+        chiefPresenter = new ChiefPresenter(this, this);
+        //chiefPresenter.setChiefPresenterInstance(chiefPresenter);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
+    }
+
+    @Override
+    public void initializeUI() {
+        SeekBarListener seekBarChangedListener = new SeekBarListener();
+        TextureListener surfaceTextureListener = new TextureListener();
+        textureViewPreviewHolder = findViewById(R.id.activity_camera_textureview_preview_holder);
+        textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
         sbRed = findViewById(R.id.activity_camera_rb_red);
         sbGreen = findViewById(R.id.activity_camera_rb_green);
         sbBlue = findViewById(R.id.activity_camera_rb_blue);
-        seekBarChangedListener = new ListenSeekBarChange();
+        tlBarsViewGroup = findViewById(R.id.activity_camera_tl);
         sbRed.setOnSeekBarChangeListener(seekBarChangedListener);
         sbGreen.setOnSeekBarChangeListener(seekBarChangedListener);
         sbBlue.setOnSeekBarChangeListener(seekBarChangedListener);
 
-
-        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        reqCameraFacingType = CameraCharacteristics.LENS_FACING_BACK;
-
-        surfaceTextureListener = new TextureListener();
-        cameraCallback = new CameraCallback();
-        cameraSessionCallback = new CameraSessionCallback();
-
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+        //cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        //reqCameraFacingType = CameraCharacteristics.LENS_FACING_BACK;
+        //surfaceTextureListener = new TextureListener();
+        //textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
+        //cameraCallback = new CameraCallback();
+        //cameraSessionCallback = new CameraSessionCallback();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (textureView.isAvailable()) {
-            getCamera();
-            openCamera();
-        } else textureView.setSurfaceTextureListener(surfaceTextureListener);
+        if (textureViewPreviewHolder.isAvailable()) {
+            chiefPresenter.onUIReady();
+            // getCamera();
+            // openCamera();
+        } //else textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        closeCamera();
+
+        chiefPresenter.informToCloseCamera();
     }
 
-    void getCamera() {
+    /*@Override
+    public void getCamera() {
         try {
             String[] camerasIDs = cameraManager.getCameraIdList();
             for (int i = 0; i < camerasIDs.length; i++) {
@@ -87,9 +97,10 @@ public class CameraActivity extends Activity {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
-    void openCamera() {
+    /*@Override
+    public void openCamera(String workingCameraID, CameraDevice.StateCallback cameraCallback, CameraManager cameraManager) {
         try {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -100,7 +111,8 @@ public class CameraActivity extends Activity {
         }
     }
 
-    void closeCamera() {
+    @Override
+    public void closeCamera() {
         if (cameraSession != null) {
             cameraSession.close();
             cameraSession = null;
@@ -109,11 +121,42 @@ public class CameraActivity extends Activity {
             cameraDevice.close();
             cameraDevice = null;
         }
+    }*/
+
+    @Override
+    public Point getDisplaySize() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point displaySizePoint = new Point();
+        display.getSize(displaySizePoint);
+        return displaySizePoint;
     }
 
-    void createPreviewSession() {
-        SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
-        surfaceTexture.setDefaultBufferSize(1480, 720);
+    @Override
+    public TextureView getTextureView() {
+        return textureViewPreviewHolder;
+    }
+
+    @Override
+    public void showUI() {
+        tlBarsViewGroup.setVisibility(View.VISIBLE);
+        /*/sbRed.setVisibility(View.VISIBLE);
+        sbGreen.setVisibility(View.VISIBLE);
+        sbBlue.setVisibility(View.VISIBLE);*/
+    }
+
+    /**
+     * @Override public void hideUI() {
+     * sbRed.setVisibility(View.INVISIBLE);
+     * sbGreen.setVisibility(View.INVISIBLE);
+     * sbBlue.setVisibility(View.INVISIBLE);
+     * }
+     */
+
+    /*@Override
+    public void createPreviewSession() {
+        Point size = getDisplaySize();
+        SurfaceTexture surfaceTexture = textureViewPreviewHolder.getSurfaceTexture();
+        surfaceTexture.setDefaultBufferSize(size.x, size.y);
         Surface previewSurface = new Surface(surfaceTexture);
         try {
             captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -131,12 +174,14 @@ public class CameraActivity extends Activity {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
-    class TextureListener implements TextureView.SurfaceTextureListener {
+    private class TextureListener implements TextureView.SurfaceTextureListener {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-
+            //chiefPresenter.getCamera();
+            //openCamera();
+            chiefPresenter.onUIReady();
         }
 
         @Override
@@ -155,23 +200,26 @@ public class CameraActivity extends Activity {
         }
     }
 
-    class CameraCallback extends CameraDevice.StateCallback {
+   /* class CameraCallback extends CameraDevice.StateCallback {
         @Override
         public void onOpened(CameraDevice camera) {
-            cameraDevice = camera;
+            //cameraDevice = camera;
             createPreviewSession();
+            chiefPresenter.onCameraOpened(camera);
         }
 
         @Override
         public void onDisconnected(CameraDevice camera) {
-            camera.close();
+            //camera.close();
             cameraDevice = null;
+            chiefPresenter.onCameraDisconected(camera);
         }
 
         @Override
         public void onError(CameraDevice camera, int error) {
-            camera.close();
+            //camera.close();
             cameraDevice = null;
+            chiefPresenter.onCameraError(camera);
         }
     }
 
@@ -191,18 +239,23 @@ public class CameraActivity extends Activity {
         public void onConfigureFailed(CameraCaptureSession session) {
 
         }
-    }
+    }*/
 
-    class ListenSeekBarChange implements SeekBar.OnSeekBarChangeListener {
+    private class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
+
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            RggbChannelVector rggbChannelVector = new RggbChannelVector((float) (sbRed.getProgress() / 0.4), (float) (sbGreen.getProgress() / 0.4), (float) (sbGreen.getProgress() / 0.4), (float) (sbBlue.getProgress() / 0.4));
-            captureBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, rggbChannelVector);
+
+            chiefPresenter.onSeekBarsValuesChanged(sbRed.getProgress(), sbGreen.getProgress(), sbBlue.getProgress());
+/*
+            RggbChannelVector rggbChannelVector = new RggbChannelVector((sbRed.getProgress() / 255f), (sbGreen.getProgress() / 255f), (sbGreen.getProgress() / 255f), (sbBlue.getProgress() / 255f));
+
+            chiefPresenter.captureBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, rggbChannelVector);
             try {
-                cameraSession.setRepeatingRequest(captureBuilder.build(), null, null);
+                chiefPresenter.cameraSession.setRepeatingRequest(chiefPresenter.captureBuilder.build(), null, null);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
 
         @Override
