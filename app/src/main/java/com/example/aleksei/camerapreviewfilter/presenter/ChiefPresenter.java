@@ -39,10 +39,10 @@ public class ChiefPresenter {
 
     public ChiefPresenter(CameraInterface cameraInterfaceInstance, Context context) {
         this.cameraInterfaceInstance = cameraInterfaceInstance;
-        this.context = context; 
+        this.context = context;
     }
 
-    public void onUIReady() {
+    public void onUIReady() { 
         cameraInterfaceInstance.hideUI();
         CameraCallback cameraCallback = new CameraCallback();
         cameraSessionCallback = new CameraSessionCallback();
