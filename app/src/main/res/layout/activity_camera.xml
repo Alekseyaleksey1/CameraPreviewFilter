@@ -13,8 +13,7 @@
     <TableLayout
         android:id="@+id/activity_camera_tl"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible">
+        android:layout_height="wrap_content">
 
         <TableRow
             android:layout_width="match_parent"
@@ -25,8 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:max="255"
-                />
+                android:max="255" />
 
             <TextView
                 android:id="@+id/activity_camera_tv_red_hint"
@@ -47,8 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:max="255"
-                />
+                android:max="255" />
 
             <TextView
                 android:id="@+id/activity_camera_tv_green_hint"
@@ -69,8 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:max="255"
-                />
+                android:max="255" />
 
             <TextView
                 android:id="@+id/activity_camera_tv_blue_hint"

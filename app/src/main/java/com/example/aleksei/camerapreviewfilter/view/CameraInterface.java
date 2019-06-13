@@ -7,9 +7,13 @@ public interface CameraInterface {
 
     Point getDisplaySize();
 
+    int[] getColors();
+
     TextureView getTextureView();
 
     void initializeUI();
 
     void showUI();
+
+    void hideUI();
 }
