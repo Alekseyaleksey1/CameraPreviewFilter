@@ -16,9 +16,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.view.Surface;
-
 import com.example.aleksei.camerapreviewfilter.view.CameraInterface;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -42,7 +40,7 @@ public class ChiefPresenter {
         this.context = context;
     }
 
-    public void onUIReady() { 
+    public void onUIReady() {
         cameraInterfaceInstance.hideUI();
         CameraCallback cameraCallback = new CameraCallback();
         cameraSessionCallback = new CameraSessionCallback();

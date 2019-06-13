@@ -11,7 +11,6 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TableLayout;
-
 import com.example.aleksei.camerapreviewfilter.R;
 import com.example.aleksei.camerapreviewfilter.presenter.ChiefPresenter;
 
