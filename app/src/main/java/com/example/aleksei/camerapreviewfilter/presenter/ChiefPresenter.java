@@ -23,6 +23,7 @@ import java.util.ArrayList;
 public class ChiefPresenter {
 
     private static final String HANDLER_THREAD_NAME = "handlerThreadName";
+    private static final int UI_HANDLER_EMPTY_MESSAGE = 1;
     private CameraInterface cameraInterfaceInstance;
     private Context context;
     private CameraManager cameraManager;
@@ -177,7 +178,7 @@ public class ChiefPresenter {
    private class CameraSessionCallback extends CameraCaptureSession.StateCallback {
         @Override
         public void onConfigured(CameraCaptureSession session) {
-            UIHandler.sendEmptyMessage(1);
+            UIHandler.sendEmptyMessage(UI_HANDLER_EMPTY_MESSAGE);
             cameraSession = session;
             setupBuilder();
             try {
