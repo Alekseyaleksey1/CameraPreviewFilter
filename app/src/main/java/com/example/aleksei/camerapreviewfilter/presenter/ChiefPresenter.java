@@ -148,7 +148,7 @@ public class ChiefPresenter {
 
     private void setupBuilder() {
         int[] colors = cameraInterfaceInstance.getColors();
-        RggbChannelVector rggbChannelVector = new RggbChannelVector((80 + colors[0])*2  / 255f, (80 + colors[1]) / 255f, (80 + colors[1]) / 255f, (80 + colors[2])*2  / 255f);
+        RggbChannelVector rggbChannelVector = new RggbChannelVector((160 + colors[0])  / 255f, (80 + colors[1]) / 255f, (80 + colors[1]) / 255f, (160 + colors[2])  / 255f);
         captureBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
         captureBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
         captureBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, rggbChannelVector);
