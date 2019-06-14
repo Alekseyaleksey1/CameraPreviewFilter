@@ -66,7 +66,7 @@ public class ChiefPresenter {
         }
     }
 
-    static class UIChangeHandler extends Handler {
+    private static class UIChangeHandler extends Handler {
         private final WeakReference<ChiefPresenter> chiefPresenterWeakReference;
 
         UIChangeHandler(ChiefPresenter chiefPresenter) {
@@ -148,13 +148,13 @@ public class ChiefPresenter {
 
     private void setupBuilder() {
         int[] colors = cameraInterfaceInstance.getColors();
-        RggbChannelVector rggbChannelVector = new RggbChannelVector((80 + colors[0]) * 2 / 255f, (80 + colors[1]) / 255f, (80 + colors[1]) / 255f, (80 + colors[2]) * 2 / 255f);
+        RggbChannelVector rggbChannelVector = new RggbChannelVector((80 + colors[0])*2  / 255f, (80 + colors[1]) / 255f, (80 + colors[1]) / 255f, (80 + colors[2])*2  / 255f);
         captureBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
         captureBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
         captureBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, rggbChannelVector);
     }
 
-    class CameraCallback extends CameraDevice.StateCallback {
+    private class CameraCallback extends CameraDevice.StateCallback {
         @Override
         public void onOpened(CameraDevice camera) {
             cameraDevice = camera;
@@ -174,7 +174,7 @@ public class ChiefPresenter {
         }
     }
 
-    class CameraSessionCallback extends CameraCaptureSession.StateCallback {
+   private class CameraSessionCallback extends CameraCaptureSession.StateCallback {
         @Override
         public void onConfigured(CameraCaptureSession session) {
             UIHandler.sendEmptyMessage(1);
