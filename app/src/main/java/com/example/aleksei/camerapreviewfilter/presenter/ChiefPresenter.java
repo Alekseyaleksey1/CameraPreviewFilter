@@ -14,11 +14,14 @@ import android.hardware.camera2.params.RggbChannelVector;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.Surface;
 import com.example.aleksei.camerapreviewfilter.view.CameraInterface;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+
 
 public class ChiefPresenter {
 
@@ -157,19 +160,19 @@ public class ChiefPresenter {
 
     private class CameraCallback extends CameraDevice.StateCallback {
         @Override
-        public void onOpened(CameraDevice camera) {
+        public void onOpened(@NonNull CameraDevice camera) {
             cameraDevice = camera;
             createPreviewSession();
         }
 
         @Override
-        public void onDisconnected(CameraDevice camera) {
+        public void onDisconnected(@NonNull CameraDevice camera) {
             camera.close();
             cameraDevice = null;
         }
 
         @Override
-        public void onError(CameraDevice camera, int error) {
+        public void onError(@NonNull CameraDevice camera, int error) {
             camera.close();
             cameraDevice = null;
         }
@@ -177,7 +180,7 @@ public class ChiefPresenter {
 
    private class CameraSessionCallback extends CameraCaptureSession.StateCallback {
         @Override
-        public void onConfigured(CameraCaptureSession session) {
+        public void onConfigured(@NonNull CameraCaptureSession session) {
             UIHandler.sendEmptyMessage(UI_HANDLER_EMPTY_MESSAGE);
             cameraSession = session;
             setupBuilder();
@@ -189,7 +192,7 @@ public class ChiefPresenter {
         }
 
         @Override
-        public void onConfigureFailed(CameraCaptureSession session) {
+        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
         }
     }
 }
