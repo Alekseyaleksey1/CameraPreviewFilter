@@ -16,12 +16,11 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.Surface;
 import com.example.aleksei.camerapreviewfilter.view.CameraInterface;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-
-
 
 public class ChiefPresenter {
 
@@ -45,16 +44,18 @@ public class ChiefPresenter {
     }
 
     public void onUIReady() {
+        Log.i("onUIReady", "onUIReady");
         cameraInterfaceInstance.hideUI();
         CameraCallback cameraCallback = new CameraCallback();
         cameraSessionCallback = new CameraSessionCallback();
         UIHandler = new UIChangeHandler(this);
+        ////int reqCameraFacingType = CameraCharacteristics.LENS_FACING_BACK;//////
         int reqCameraFacingType = CameraCharacteristics.LENS_FACING_BACK;
         getCamera(reqCameraFacingType);
         openWorkingCamera(workingCameraID, cameraCallback, cameraManager);
     }
 
-    private void getCamera(int reqCameraFacingType) {
+    private void getCamera(int reqCameraFacingType) {Log.i("getCamera", "getCamera");
         try {
             cameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
             String[] camerasIDs = cameraManager.getCameraIdList();
@@ -98,10 +99,11 @@ public class ChiefPresenter {
         }
     }
 
-    private void openWorkingCamera(String workingCameraID, CameraDevice.StateCallback cameraCallback, CameraManager cameraManager) {
+    private void openWorkingCamera(String workingCameraID, CameraDevice.StateCallback cameraCallback, CameraManager cameraManager) {Log.i("openWorkingCamera", "openWorkingCamera");
         openBackgroundThread();
         try {
             if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                //////cameraManager.openCamera(workingCameraID, cameraCallback, backgroundHandler);/////
                 cameraManager.openCamera(workingCameraID, cameraCallback, backgroundHandler);
             }
         } catch (CameraAccessException e) {
@@ -125,7 +127,7 @@ public class ChiefPresenter {
         }
     }
 
-    private void createPreviewSession() {
+    private void createPreviewSession() {Log.i("createPreviewSession", "createPreviewSession");
         Point size = cameraInterfaceInstance.getDisplaySize();
         SurfaceTexture surfaceTexture = cameraInterfaceInstance.getTextureView().getSurfaceTexture();
         surfaceTexture.setDefaultBufferSize(size.x, size.y);
@@ -141,7 +143,7 @@ public class ChiefPresenter {
         }
     }
 
-    public void onSeekBarsValuesChanged() {
+    public void onSeekBarsValuesChanged() {Log.i("onSeekBarsValuesChanged", "onSeekBarsValuesChanged");
         setupBuilder();
         try {
             cameraSession.setRepeatingRequest(captureBuilder.build(), null, backgroundHandler);
@@ -150,7 +152,7 @@ public class ChiefPresenter {
         }
     }
 
-    private void setupBuilder() {
+    private void setupBuilder() {Log.i("setupBuilder", "setupBuilder");
         int[] colors = cameraInterfaceInstance.getColors();
         RggbChannelVector rggbChannelVector = new RggbChannelVector((160 + colors[0])  / 255f, (80 + colors[1]) / 255f, (80 + colors[1]) / 255f, (160 + colors[2])  / 255f);
         captureBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
@@ -160,7 +162,7 @@ public class ChiefPresenter {
 
     private class CameraCallback extends CameraDevice.StateCallback {
         @Override
-        public void onOpened(@NonNull CameraDevice camera) {
+        public void onOpened(@NonNull CameraDevice camera) {Log.i("CameraCallback", "onOpened");
             cameraDevice = camera;
             createPreviewSession();
         }
@@ -180,7 +182,7 @@ public class ChiefPresenter {
 
    private class CameraSessionCallback extends CameraCaptureSession.StateCallback {
         @Override
-        public void onConfigured(@NonNull CameraCaptureSession session) {
+        public void onConfigured(@NonNull CameraCaptureSession session) {Log.i("CameraSessionCallback", "onConfigured");
             UIHandler.sendEmptyMessage(UI_HANDLER_EMPTY_MESSAGE);
             cameraSession = session;
             setupBuilder();

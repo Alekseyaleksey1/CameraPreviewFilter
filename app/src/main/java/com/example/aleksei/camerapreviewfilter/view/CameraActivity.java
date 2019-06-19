@@ -26,6 +26,7 @@ public class CameraActivity extends Activity implements CameraInterface{
     private SeekBar sbGreen;
     private SeekBar sbBlue;
     private TableLayout tlBarsViewGroup;
+    private TextureListener surfaceTextureListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +45,9 @@ public class CameraActivity extends Activity implements CameraInterface{
     @Override
     public void initializeUI() {
         SeekBarListener seekBarChangedListener = new SeekBarListener();
-        TextureListener surfaceTextureListener = new TextureListener();
+        surfaceTextureListener = new TextureListener();
         textureViewPreviewHolder = findViewById(R.id.activity_camera_textureview_preview_holder);
-        textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
+        //textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
         sbRed = findViewById(R.id.activity_camera_rb_red);
         sbGreen = findViewById(R.id.activity_camera_rb_green);
         sbBlue = findViewById(R.id.activity_camera_rb_blue);
@@ -61,11 +62,18 @@ public class CameraActivity extends Activity implements CameraInterface{
         super.onResume();
         if (textureViewPreviewHolder.isAvailable()) {
             chiefPresenter.onUIReady();
-        }
+        }else textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        chiefPresenter.informToCloseCamera();
     }
 
     @Override
-    protected void onStop() {
+    protected void onStop() {//todo
         super.onStop();
         chiefPresenter.informToCloseCamera();
     }
