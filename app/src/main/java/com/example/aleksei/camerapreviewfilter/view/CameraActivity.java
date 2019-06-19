@@ -11,10 +11,11 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TableLayout;
+
 import com.example.aleksei.camerapreviewfilter.R;
 import com.example.aleksei.camerapreviewfilter.presenter.ChiefPresenter;
 
-public class CameraActivity extends Activity implements CameraInterface{
+public class CameraActivity extends Activity implements CameraInterface {
 
     public static final String KEY_RED_COLOR = "keyRed";
     public static final String KEY_GREEN_COLOR = "keyGreen";
@@ -47,7 +48,6 @@ public class CameraActivity extends Activity implements CameraInterface{
         SeekBarListener seekBarChangedListener = new SeekBarListener();
         surfaceTextureListener = new TextureListener();
         textureViewPreviewHolder = findViewById(R.id.activity_camera_textureview_preview_holder);
-        //textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
         sbRed = findViewById(R.id.activity_camera_rb_red);
         sbGreen = findViewById(R.id.activity_camera_rb_green);
         sbBlue = findViewById(R.id.activity_camera_rb_blue);
@@ -62,19 +62,12 @@ public class CameraActivity extends Activity implements CameraInterface{
         super.onResume();
         if (textureViewPreviewHolder.isAvailable()) {
             chiefPresenter.onUIReady();
-        }else textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
+        } else textureViewPreviewHolder.setSurfaceTextureListener(surfaceTextureListener);
     }
-
 
     @Override
     protected void onPause() {
         super.onPause();
-        chiefPresenter.informToCloseCamera();
-    }
-
-    @Override
-    protected void onStop() {//todo
-        super.onStop();
         chiefPresenter.informToCloseCamera();
     }
 
